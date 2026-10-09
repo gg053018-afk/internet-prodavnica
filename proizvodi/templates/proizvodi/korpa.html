@@ -1,0 +1,51 @@
+<h1>Korpa</h1>
+
+{% for stavka in stavke_korpe %}
+
+<h2>{{ stavka.proizvod.naziv }}</h2>
+
+<p>Količina: {{ stavka.kolicina }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="number" name="kolicina" min="1"
+        max="{{ stavka.proizvod.kolicina }}"
+        value="{{ stavka.kolicina }}">
+    <input type="hidden" name="proizvod_id"
+        value="{{ stavka.proizvod.id }}">
+
+    <button type="submit">Promijeni količinu</button>
+</form>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="hidden" name="proizvod_id"
+    value="{{ stavka.proizvod.id }}">
+
+    <button type="submit" name="akcija" value="ukloni">Ukloni iz korpe</button>
+
+</form>
+
+<p>Cijena po komadu: {{ stavka.proizvod.cijena }} KM</p>
+<p>Ukupno: {{ stavka.ukupno }} KM</p>
+
+{% empty %}
+    <p>Korpa je prazna.</p>
+
+{% endfor %}
+
+<h2>Ukupno za plaćanje: {{ ukupno_korpa }} KM</h2>
+
+{% if stavke_korpe %}
+    {% if user.is_authenticated %}
+
+       <a href="{% url 'narudzba' %}">Nastavi na narudžbu</a>
+
+    {% else %}
+        <p>Za nastavak kupovine morate se prijaviti.</p>
+        <a href="{% url 'prijava' %}">Prijavi se</a>
+
+    {% endif %}
+{% endif %}

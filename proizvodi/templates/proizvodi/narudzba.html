@@ -1,0 +1,40 @@
+<h1>Narudžba</h1>
+
+<p>{{ poruka }}</p>
+
+<p>Podaci za narudžbu</p>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Ime:</label>
+    <input type="text" name="ime" required>
+    <br>
+
+    <label>Prezime:</label>
+    <input type="text" name="prezime" required>
+    <br>
+
+    <label>Adresa:</label>
+    <input type="text" name="adresa" required>
+    <br>
+
+    <label>Grad:</label>
+    <input type="text" name="grad" required>
+    <br>
+
+    <label>Poštanski broj:</label>
+    <input type="text" name="postanski_broj" required>
+    <br>
+
+    <label>Broj telefona:</label>
+    <input type="tel" name="telefon" required>
+    <br>
+
+    <label>E-mail:</label>
+    <input type="email" name="email" required>
+    <br>
+
+    <button type="submit">Potvrdi narudžbu</button>
+
+</form>

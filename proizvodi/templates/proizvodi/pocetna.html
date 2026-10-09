@@ -1,0 +1,40 @@
+<h1>Internet prodavnica</h1>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+{% if user.is_authenticated %}
+    <p>Prijavljen korisnik: {{ user.username }}</p>
+    <a href="{% url 'odjava' %}">Odjavi se</a>
+    <a href="{% url 'moje_narudzbe' %}">Moje narudžbe</a>
+{% else %}
+    <p>Korisnik nije prijavljen.</p>
+    <a href="{% url 'prijava' %}">Prijavi se</a>
+    <a href="{% url 'registracija' %}">Registruj se</a>
+{% endif %}
+
+{% for proizvod in proizvodi %}
+
+<h2>{{ proizvod.naziv }}</h2>
+<a href="{% url 'detalji_proizvoda' proizvod.id %}"
+    >Pogledaj proizvod</a>
+
+<img src="{{ proizvod.slika.url }}"
+    alt="{{ proizvod.naziv }}" width="300">
+
+<p>Cijena: {{ proizvod.cijena }} KM</p>
+<p>Opis: {{ proizvod.opis }}</p>
+<p>Kategorija: {{ proizvod.kategorija }}</p>
+<p>Na stanju: {{ proizvod.kolicina }}</p>
+
+{% if proizvod.dostupan %}
+    <p>Proizvod je dostupan</p>
+
+{% else %}
+    <p>Proizvod trenutno nije dostupan</p>
+
+{% endif %}
+{% endfor %}

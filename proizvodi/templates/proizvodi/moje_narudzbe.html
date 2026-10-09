@@ -1,0 +1,31 @@
+<h1>Moje narudžbe</h1>
+
+{% for narudzba in narudzbe %}
+
+    <h2>Broj narudžbe: {{ narudzba.id }}</h2>
+
+    <p>Datum narudžbe: {{ narudzba.datum_narudzbe|date:"d.m.Y. H:i" }}</p>
+
+    <p>Status narudžbe: {{ narudzba.status }}</p>
+
+    {% for stavka in narudzba.stavkanarudzbe_set.all %}
+
+        <p>Proizvod: {{ stavka.proizvod.naziv }}</p>
+
+        <p>Količina: {{ stavka.kolicina }}</p>
+
+        <p>Cijena po komadu: {{ stavka.cijena }} KM</p>
+
+    {% endfor %}
+
+    <h3>Ukupno za plaćanje: {{ narudzba.ukupno }} KM</h3>
+
+    <hr>
+
+{% empty %}
+
+    <p>Nemate nijednu narudžbu.</p>
+
+{% endfor %}
+
+<a href="{% url 'pocetna' %}">Nazad na početnu stranicu</a>

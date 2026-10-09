@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Registracija</title>
+
+</head>
+<body>
+<h1>Registracija korisnika</h1>
+
+<p>{{ poruka }}</p>
+
+<form method="POST" action="">
+    {% csrf_token %}
+
+    <label>Korisničko ime:</label>
+    <input type="text" name="korisnicko_ime" required>
+    <br>
+
+    <label>e mail:</label>
+    <input type="email" name="e_mail" required>
+    <br>
+
+    <label>Lozinka:</label>
+    <input type="password" name="lozinka" required>
+    <br>
+
+    <label>Potvrdi lozinku:</label>
+    <input type="password" name="potvrda_lozinke" required>
+    <br>
+
+    <button type="submit">Registruj se</button>
+
+</form>
+</body>
+</html>

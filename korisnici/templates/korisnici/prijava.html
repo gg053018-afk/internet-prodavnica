@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Prijava</title>
+
+</head>
+<body>
+
+<h1>Prijava korisnika</h1>
+<p>{{ poruka }}</p>
+
+{% if user.is_authenticated %}
+
+    <p>Prijavljen korisnik: {{ user.username }}</p>
+    <a href="{% url 'odjava' %}">Odjavi se</a>
+
+{% else %}
+
+    <p>Korisnik nije prijavljen.</p>
+
+{% endif %}
+
+<form method="POST" action="">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+<input type="hidden" name="next" value="{{ request.GET.next }}">
+
+<label>Korisničko ime:</label>
+<input type="text" name="korisnicko_ime" required>
+<br>
+
+<label>Lozinka:</label>
+<input type="password" name="lozinka" required>
+<br>
+<button type="submit">Prijavi se</button>
+
+</form>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<h1>{{ proizvod.naziv }}</h1>
+<p>{{ poruka }}</p>
+
+<p>Cijena: {{ proizvod.cijena }} KM</p>
+<img src="{{ proizvod.slika.url }}" alt="{{ proizvod.naziv }}" width="300">
+<p>Opis: {{ proizvod.opis }}</p>
+<p>Kategorija: {{ proizvod.kategorija }}</p>
+<p>Na stanju: {{ proizvod.kolicina }}</p>
+
+{% if proizvod.kolicina > 0 and proizvod.dostupan %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Količina:</label>
+
+        <input type="number" name="kolicina" min="1" max="{{ proizvod.kolicina }}" value="1">
+
+        <button type="submit">Dodaj u korpu</button>
+
+    </form>
+
+{% else %}
+
+    <p>Proizvod nije dostupan.</p>
+
+{% endif %}
+
+<a href="{% url 'korpa' %}">Pogledaj korpu</a>
