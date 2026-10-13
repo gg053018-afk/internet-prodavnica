@@ -1,8 +1,27 @@
+{% load static %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{% static 'proizvodi/style.css' %}">
+
+<div class="stranica-korpe">
+
+{% include 'proizvodi/navigacija.html' %}
+
 <h1>Korpa</h1>
 
+{% if messages %}
+    {% for message in messages %}
+        <p class="poruka-narudzbe">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
 {% for stavka in stavke_korpe %}
+<div class="stavka-korpe">
 
 <h2>{{ stavka.proizvod.naziv }}</h2>
+
+<img src="{{ stavka.proizvod.slika.url }}"
+     alt="{{ stavka.proizvod.naziv }}"
+     width="150">
 
 <p>Količina: {{ stavka.kolicina }}</p>
 
@@ -15,7 +34,7 @@
     <input type="hidden" name="proizvod_id"
         value="{{ stavka.proizvod.id }}">
 
-    <button type="submit">Promijeni količinu</button>
+<button type="submit" class="dugme-promijeni">Promijeni količinu</button>
 </form>
 
 <form method="POST">
@@ -24,24 +43,25 @@
     <input type="hidden" name="proizvod_id"
     value="{{ stavka.proizvod.id }}">
 
-    <button type="submit" name="akcija" value="ukloni">Ukloni iz korpe</button>
+<button type="submit" name="akcija" value="ukloni" class="dugme-ukloni">Ukloni iz korpe</button>
 
 </form>
 
 <p>Cijena po komadu: {{ stavka.proizvod.cijena }} KM</p>
 <p>Ukupno: {{ stavka.ukupno }} KM</p>
+</div>
 
 {% empty %}
-    <p>Korpa je prazna.</p>
+    <p class="prazna-korpa">Korpa je prazna.</p>
 
 {% endfor %}
 
-<h2>Ukupno za plaćanje: {{ ukupno_korpa }} KM</h2>
+<h2 class="ukupno-placanje">Ukupno za plaćanje: {{ ukupno_korpa }} KM</h2>
 
 {% if stavke_korpe %}
     {% if user.is_authenticated %}
 
-       <a href="{% url 'narudzba' %}">Nastavi na narudžbu</a>
+<a class="dugme-narudzba" href="{% url 'narudzba' %}">Nastavi na narudžbu</a>
 
     {% else %}
         <p>Za nastavak kupovine morate se prijaviti.</p>
@@ -49,3 +69,4 @@
 
     {% endif %}
 {% endif %}
+</div>

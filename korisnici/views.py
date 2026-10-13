@@ -65,5 +65,10 @@ def prijava(request):
     )
 
 def odjava(request):
+    sacuvana_korpa = request.session.get("korpa", {}).copy()
+
     logout(request)
+
+    request.session["korpa"] = sacuvana_korpa
+
     return redirect("/")

@@ -1,11 +1,16 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-
-<title>Prijava</title>
-
+    <title>Prijava</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'proizvodi/style.css' %}">
 </head>
+
 <body>
+<div class="stranica-prijave">
+
+{% include 'proizvodi/navigacija.html' %}
 
 <h1>Prijava korisnika</h1>
 <p>{{ poruka }}</p>
@@ -25,8 +30,6 @@
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.GET.next }}">
 
-<input type="hidden" name="next" value="{{ request.GET.next }}">
-
 <label>Korisničko ime:</label>
 <input type="text" name="korisnicko_ime" required>
 <br>
@@ -37,5 +40,7 @@
 <button type="submit">Prijavi se</button>
 
 </form>
+
+</div>
 </body>
 </html>

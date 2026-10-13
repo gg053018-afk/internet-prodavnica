@@ -59,6 +59,7 @@ def korpa(request):
             if str(proizvod_id) in korpa_session:
                 del korpa_session[str(proizvod_id)]
                 request.session["korpa"] = korpa_session
+                messages.success(request, "Proizvod je uspješno uklonjen iz korpe.")
 
         else:
             kolicina = request.POST.get("kolicina")
@@ -101,6 +102,15 @@ def narudzba(request):
         postanski_broj = request.POST.get("postanski_broj")
         telefon = request.POST.get("telefon")
         email = request.POST.get("email")
+
+        if not all([ime, prezime, adresa, grad, postanski_broj, telefon, email]):
+            poruka = "Morate popuniti sva obavezna polja."
+
+            return render(
+                request,
+                "proizvodi/narudzba.html",
+                {"poruka": poruka}
+            )
 
         korpa_session = request.session.get("korpa", {})
 
@@ -174,8 +184,9 @@ def narudzba(request):
 
 @login_required(login_url="prijava")
 def moje_narudzbe(request):
-    narudzbe = Narudzba.objects.filter(korisnik=request.user)
 
+    narudzbe = Narudzba.objects.filter(korisnik=request.user).order_by("-id")
+    
     return render(
         request,
         "proizvodi/moje_narudzbe.html",

@@ -1,7 +1,16 @@
-<h1>{{ proizvod.naziv }}</h1>
-<p>{{ poruka }}</p>
+{% load static %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{% static 'proizvodi/style.css' %}">
+<div class="detalji-proizvoda">
 
-<p>Cijena: {{ proizvod.cijena }} KM</p>
+    {% include 'proizvodi/navigacija.html' %}
+
+<h1>{{ proizvod.naziv }}</h1>
+{% if poruka %}
+    <p class="poruka-uspjeh">{{ poruka }}</p>
+{% endif %}
+
+<p class="cijena-detalji">Cijena: {{ proizvod.cijena }} KM</p>
 <img src="{{ proizvod.slika.url }}" alt="{{ proizvod.naziv }}" width="300">
 <p>Opis: {{ proizvod.opis }}</p>
 <p>Kategorija: {{ proizvod.kategorija }}</p>
@@ -26,4 +35,5 @@
 
 {% endif %}
 
-<a href="{% url 'korpa' %}">Pogledaj korpu</a>
+<a class="dugme-korpa" href="{% url 'korpa' %}">Pogledaj korpu</a>
+</div>

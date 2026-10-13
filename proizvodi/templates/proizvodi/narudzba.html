@@ -1,8 +1,16 @@
+{% load static %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{% static 'proizvodi/style.css' %}">
+
+<div class="stranica-narudzbe">
+
+    {% include 'proizvodi/navigacija.html' %}
+
 <h1>Narudžba</h1>
 
-<p>{{ poruka }}</p>
+<p class="poruka-greske">{{ poruka }}</p>
 
-<p>Podaci za narudžbu</p>
+<p class="podaci-narudzbe">Podaci za narudžbu</p>
 
 <form method="POST">
     {% csrf_token %}
@@ -35,6 +43,7 @@
     <input type="email" name="email" required>
     <br>
 
-    <button type="submit">Potvrdi narudžbu</button>
+<button type="submit" class="dugme-potvrdi">Potvrdi narudžbu</button>
 
 </form>
+</div>
