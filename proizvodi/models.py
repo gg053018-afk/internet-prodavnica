@@ -12,6 +12,11 @@ class Proizvod(models.Model):
     kategorija = models.CharField(max_length=100)
     dostupan = models.BooleanField(default=True)
     rok_trajanja = models.DateField(null=True, blank=True)
+    
+    class Meta:
+        verbose_name = "Proizvod"
+        verbose_name_plural = "Proizvodi"
+    
     def __str__(self):
         return self.naziv
 
@@ -45,6 +50,10 @@ class Narudzba(models.Model):
         choices=STATUS_CHOICES,
         default="Na čekanju"
     )
+    
+    class Meta:
+        verbose_name = "Narudžba"
+        verbose_name_plural = "Narudžbe"
 
     def __str__(self):
         return self.ime + " " + self.prezime
@@ -54,6 +63,10 @@ class StavkaNarudzbe(models.Model):
     proizvod = models.ForeignKey(Proizvod, on_delete=models.CASCADE)
     kolicina = models.PositiveIntegerField()
     cijena = models.DecimalField(max_digits=10, decimal_places=2)
-
+    
+    class Meta:
+        verbose_name = "Stavka narudžbe"
+        verbose_name_plural = "Stavke narudžbe"
+    
     def __str__(self):
         return self.proizvod.naziv
