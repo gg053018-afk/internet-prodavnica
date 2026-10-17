@@ -18,6 +18,8 @@
 
     <p>Status narudžbe: {{ narudzba.status }}</p>
 
+    <a href="{% url 'detalji_narudzbe' narudzba.id %}">Detalji narudžbe</a>
+    
     {% for stavka in narudzba.stavkanarudzbe_set.all %}
 
         <p>Proizvod: {{ stavka.proizvod.naziv }}</p>

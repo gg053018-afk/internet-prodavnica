@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'proizvodi/style.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Detalji narudzbe</title>
+
+</head>
+
+<body class="stranica-detalji-narudzbe"></body>
+    {% include 'proizvodi/navigacija.html' %}
+
+    <h1>Detalji narudžbe</h1>
+
+    <h2>Podaci o narudžbi</h2>
+
+    <p>Broj narudžbe: {{ narudzba.id }}</p>
+    <p>Status narudžbe: {{ narudzba.status }}</p>
+    <p>Datum narudžbe: {{ narudzba.datum_narudzbe|date:"d.m.Y. H:i" }}</p>
+
+    <h2>Podaci kupca</h2>
+
+    <p>Ime i prezime: {{ narudzba.ime }} {{ narudzba.prezime }}</p>
+    <p>Email: {{ narudzba.email }}</p>
+    <p>Telefon: {{ narudzba.telefon }}</p>
+
+    <h2>Adresa dostave</h2>
+
+    <p>Adresa dostave: {{ narudzba.adresa }}</p>
+    <p>Grad: {{ narudzba.grad }}</p>
+    <p>Poštanski broj: {{ narudzba.postanski_broj }}</p>
+
+    <h2>Naručeni proizvodi</h2>
+
+    {% for stavka in narudzba.stavkanarudzbe_set.all %}
+        <p>Proizvod: {{ stavka.proizvod.naziv }}</p>
+        <p>Količina: {{ stavka.kolicina }}</p>
+        <p>Cijena po komadu: {{ stavka.cijena }} KM</p>
+        <hr>
+    {% empty %}
+        <p>Nema proizvoda u ovoj narudžbi.</p>
+    {% endfor %}
+
+    <h2>Ukupno za plaćanje: {{ narudzba.ukupno }} KM</h2>
+
+    <a href="{% url 'moje_narudzbe' %}">Nazad na moje narudžbe</a>
+
+</body>
+</html>

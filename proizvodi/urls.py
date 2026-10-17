@@ -7,4 +7,5 @@ urlpatterns = [
     path('korpa/', views.korpa, name='korpa'),
     path('narudzba/', views.narudzba, name='narudzba'),
     path('moje-narudzbe/', views.moje_narudzbe, name='moje_narudzbe'),
+    path('moje-narudzbe/<int:narudzba_id>/', views.detalji_narudzbe, name='detalji_narudzbe'),
 ]

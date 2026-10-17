@@ -1,7 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Proizvod, Narudzba, StavkaNarudzbe
+from django.db import transaction
+from django.db.models import F
 
 def pocetna(request):
     proizvodi = Proizvod.objects.all()
@@ -133,41 +135,54 @@ def narudzba(request):
                     "proizvodi/narudzba.html",
                     {"poruka": poruka}
                 )
+        try:      
+            with transaction.atomic():
+                narudzba = Narudzba.objects.create(
+                    korisnik=request.user,
+                    ime=ime,
+                    prezime=prezime,
+                    adresa=adresa,
+                    grad=grad,
+                    postanski_broj=postanski_broj,
+                    telefon=telefon,
+                    email=email
+                )
 
-        narudzba = Narudzba.objects.create(
-            korisnik=request.user,
-            ime=ime,
-            prezime=prezime,
-            adresa=adresa,
-            grad=grad,
-            postanski_broj=postanski_broj,
-            telefon=telefon,
-            email=email
-        )
+                ukupno_narudzbe = 0
 
-        ukupno_narudzbe = 0
+                for proizvod_id, kolicina in korpa_session.items():
+                    proizvod = Proizvod.objects.get(id=proizvod_id)
 
-        for proizvod_id, kolicina in korpa_session.items():
-            proizvod = Proizvod.objects.get(id=proizvod_id)
+                    ukupno_narudzbe += proizvod.cijena * kolicina
 
-            ukupno_narudzbe += proizvod.cijena * kolicina
+                    StavkaNarudzbe.objects.create(
+                        narudzba=narudzba,
+                        proizvod=proizvod,
+                        kolicina=kolicina,
+                        cijena=proizvod.cijena
+                    )
 
-            StavkaNarudzbe.objects.create(
-                narudzba=narudzba,
-                proizvod=proizvod,
-                kolicina=kolicina,
-                cijena=proizvod.cijena
+                    azurirano = Proizvod.objects.filter(
+                        id=proizvod_id,
+                        kolicina__gte=kolicina
+                    ).update(kolicina=F("kolicina") - kolicina)
+
+                    if azurirano == 0:
+                        raise ValueError("Nema dovoljno proizvoda na stanju.")
+                    Proizvod.objects.filter(
+                        id=proizvod_id,
+                        kolicina=0
+                    ).update(dostupan=False)
+
+                narudzba.ukupno = ukupno_narudzbe
+                narudzba.save()
+        except ValueError:
+            poruka = "Nema dovoljno proizvoda na stanju."
+            return render(
+                request,
+                "proizvodi/narudzba.html",
+                {"poruka": poruka}
             )
-
-            proizvod.kolicina -= kolicina
-
-            if proizvod.kolicina == 0:
-                proizvod.dostupan = False
-
-            proizvod.save()
-
-        narudzba.ukupno = ukupno_narudzbe
-        narudzba.save()
 
         request.session["korpa"] = {}
 
@@ -191,4 +206,18 @@ def moje_narudzbe(request):
         request,
         "proizvodi/moje_narudzbe.html",
         {"narudzbe": narudzbe}
+    )
+
+@login_required(login_url="prijava")
+def detalji_narudzbe(request, narudzba_id):
+    narudzba = get_object_or_404(
+    Narudzba,
+    id=narudzba_id,
+    korisnik=request.user
+    )
+
+    return render(
+        request,
+        "proizvodi/detalji_narudzbe.html",
+        {"narudzba": narudzba}
     )
