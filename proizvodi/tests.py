@@ -102,3 +102,57 @@ class TestPocetneStranice(TestCase):
         )
 
         self.assertFalse(proizvod.dostupan)
+
+    def test_dodavanje_proizvoda_u_korpu(self):
+        proizvod = Proizvod.objects.create(
+            naziv="Hljeb",
+            kolicina=20,
+            cijena=2.00,
+            opis="Bijeli hljeb",
+            slika="proizvodi/hljeb.jpg",
+            kategorija="Pekarski proizvodi"
+        )
+
+        odgovor = self.client.post("/korpa/", {
+            "proizvod_id": proizvod.id,
+            "kolicina": "3"
+        })
+
+        self.assertEqual(self.client.session["korpa"][str(proizvod.id)], 3)
+
+    def test_uklanjanje_proizvoda_iz_korpe(self):
+        proizvod = Proizvod.objects.create(
+            naziv="Sok",
+            kolicina=15,
+            cijena=3.00,
+            opis="Sok od narandze",
+            slika="proizvodi/sok.jpg",
+            kategorija="Pica"
+        )
+
+        self.client.post("/korpa/", {
+            "proizvod_id": proizvod.id,
+            "kolicina": "2"
+        })
+
+        self.client.post("/korpa/", {
+            "akcija": "ukloni",
+            "proizvod_id": proizvod.id
+        })
+
+        self.assertNotIn(str(proizvod.id), self.client.session["korpa"])
+
+    def test_prevelika_kolicina_u_korpi(self):
+        proizvod = Proizvod.objects.create(
+            naziv="Hljeb",
+            kolicina=5,
+            cijena=2.00,
+            opis="Bijeli hljeb",
+            slika="proizvodi/hljeb.jpg",
+            kategorija="Pekarski proizvodi"
+        )
+
+        self.client.post("/korpa/", {
+            "proizvod_id": proizvod.id,
+            "kolicina": "10"
+        })
