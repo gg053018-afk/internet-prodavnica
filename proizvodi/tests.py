@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import Narudzba
+from .models import Narudzba, Proizvod
 
 # Create your tests here.
 class TestPocetneStranice(TestCase):
@@ -70,3 +70,35 @@ class TestPocetneStranice(TestCase):
         )
         odgovor = self.client.get(f"/moje-narudzbe/{narudzba.id}/")
         self.assertEqual(odgovor.status_code, 200)
+
+    def test_kreiranje_proizvoda(self):
+
+        proizvod = Proizvod.objects.create(
+            naziv="Mlijeko",
+            kolicina=10,
+            cijena=2.50,
+            opis="Svjeze mlijeko",
+            slika="proizvodi/mlijeko.jpg",
+            kategorija="Mliječni proizvodi"
+        )
+
+        self.assertEqual(proizvod.naziv, "Mlijeko")
+        self.assertEqual(proizvod.kolicina, 10)
+        self.assertEqual(proizvod.cijena, 2.50)
+        self.assertEqual(proizvod.kategorija, "Mliječni proizvodi")
+        self.assertTrue(proizvod.dostupan)
+        self.assertEqual(proizvod.opis, "Svjeze mlijeko")
+        self.assertEqual(Proizvod.objects.count(), 1)
+
+    def test_nedostupan_proizvod(self):
+        proizvod = Proizvod.objects.create(
+            naziv="Jogurt",
+            kolicina=0,
+            cijena=1.80,
+            opis="Vocni jogurt",
+            slika="proizvodi/jogurt.jpg",
+            kategorija="Mliječni proizvodi",
+            dostupan=False
+        )
+
+        self.assertFalse(proizvod.dostupan)
