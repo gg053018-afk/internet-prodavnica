@@ -281,6 +281,46 @@ class TestPocetneStranice(TestCase):
 
         self.assertContains(odgovor, "Nema dovoljno proizvoda na stanju.")
         self.assertEqual(Narudzba.objects.count(), 0)
+
         proizvod.refresh_from_db()
         self.assertEqual(proizvod.kolicina, 2)
-        self.assertEqual(StavkaNarudzbe.objects.count(), 0)       
+        self.assertEqual(StavkaNarudzbe.objects.count(), 0)
+
+    def test_proizvod_nedostupan_nakon_kupovine(self):
+        korisnik = User.objects.create_user(
+            username="kupac_posljednji_proizvod",
+            password="test12345"
+        )
+
+        self.client.force_login(korisnik)
+
+        proizvod = Proizvod.objects.create(
+            naziv="Jogurt",
+            kolicina=1,
+            cijena=2.00,
+            opis="Svježi jogurt",
+            slika="proizvodi/test_jogurt.jpg",
+            kategorija="Mliječni proizvodi",
+            dostupan=True
+        )
+
+        self.client.post("/korpa/", {
+            "proizvod_id": proizvod.id,
+            "kolicina": "1"
+        })       
+
+        odgovor = self.client.post("/narudzba/", {
+            "ime": "Marko",
+            "prezime": "Markovic",
+            "adresa": "Test adresa 1",
+            "grad": "Banja Luka",
+            "postanski_broj": "78000",
+            "telefon": "060123456",
+            "email": "marko@example.com"
+        })
+
+        proizvod.refresh_from_db()
+
+        self.assertEqual(proizvod.kolicina, 0)
+        self.assertFalse(proizvod.dostupan)
+        self.assertEqual(Narudzba.objects.count(), 1)
