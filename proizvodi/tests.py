@@ -367,3 +367,45 @@ class TestPocetneStranice(TestCase):
         proizvod.refresh_from_db()
         self.assertEqual(proizvod.kolicina, 0)
         self.assertFalse(proizvod.dostupan)
+
+    def test_narudzba_obrisanog_proizvoda(self):
+        korisnik = User.objects.create_user(
+            username="kupac_obrisan_proizvod",
+            password="test12345"
+        )
+
+        self.client.force_login(korisnik)
+
+        proizvod = Proizvod.objects.create(
+            naziv="Sok",
+            kolicina=5,
+            cijena=3.00,
+            opis="Voćni sok",
+            slika="proizvodi/test_sok.jpg",
+            kategorija="Pića",
+            dostupan=True
+        )
+
+        self.client.post("/korpa/", {
+            "proizvod_id": proizvod.id,
+            "kolicina": "1"
+        })
+        proizvod.delete()
+
+        odgovor = self.client.post("/narudzba/", {
+            "ime": "Marko",
+            "prezime": "Markovic",
+            "adresa": "Test adresa 1",
+            "grad": "Banja Luka",
+            "postanski_broj": "78000",
+            "telefon": "060123456",
+            "email": "marko@example.com"
+        })
+
+        self.assertContains(
+            odgovor,
+            "Proizvod iz korpe više nije dostupan."
+        )
+
+        self.assertEqual(Narudzba.objects.count(), 0)
+        self.assertEqual(StavkaNarudzbe.objects.count(), 0)

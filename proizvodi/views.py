@@ -125,7 +125,10 @@ def narudzba(request):
             )
 
         for proizvod_id, kolicina in korpa_session.items():
-            proizvod = Proizvod.objects.get(id=proizvod_id)
+            proizvod = Proizvod.objects.filter(id=proizvod_id).first()
+            if proizvod is None:
+                poruka = "Proizvod iz korpe više nije dostupan."
+                return render(request, "proizvodi/narudzba.html", {"poruka": poruka}) 
 
             if kolicina < 1 or kolicina > proizvod.kolicina:
                 poruka = "Nema dovoljno proizvoda na stanju."
@@ -151,7 +154,9 @@ def narudzba(request):
                 ukupno_narudzbe = 0
 
                 for proizvod_id, kolicina in korpa_session.items():
-                    proizvod = Proizvod.objects.get(id=proizvod_id)
+                    proizvod = Proizvod.objects.filter(id=proizvod_id).first()
+                    if proizvod is None:
+                        raise ValueError("Proizvod iz korpe više nije dostupan.")
 
                     ukupno_narudzbe += proizvod.cijena * kolicina
 
@@ -176,8 +181,10 @@ def narudzba(request):
 
                 narudzba.ukupno = ukupno_narudzbe
                 narudzba.save()
-        except ValueError:
-            poruka = "Nema dovoljno proizvoda na stanju."
+
+        except ValueError as greska:
+            poruka = str(greska)
+
             return render(
                 request,
                 "proizvodi/narudzba.html",
