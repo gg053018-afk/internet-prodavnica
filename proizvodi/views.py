@@ -77,7 +77,9 @@ def korpa(request):
     ukupno_korpa = 0
 
     for proizvod_id, kolicina in korpa_session.items():
-        proizvod = Proizvod.objects.get(id=proizvod_id)
+        proizvod = Proizvod.objects.filter(id=proizvod_id).first()
+        if proizvod is None:
+            continue
         ukupno = proizvod.cijena * kolicina
         ukupno_korpa += ukupno
         stavke_korpe.append({

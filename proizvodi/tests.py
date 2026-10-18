@@ -409,3 +409,26 @@ class TestPocetneStranice(TestCase):
 
         self.assertEqual(Narudzba.objects.count(), 0)
         self.assertEqual(StavkaNarudzbe.objects.count(), 0)
+
+    def test_korpa_sa_obrisanim_proizvodom(self):
+        proizvod = Proizvod.objects.create(
+            naziv="Sok od jabuke",
+            kolicina=5,
+            cijena=3.00,
+            opis="Prirodni sok od jabuke",
+            slika="proizvodi/test_sok.jpg",
+            kategorija="Pića",
+            dostupan=True
+        )
+
+        self.client.post("/korpa/", {
+            "proizvod_id": proizvod.id,
+            "kolicina": "1"
+        })
+
+        proizvod.delete()
+        odgovor = self.client.get("/korpa/")
+
+        self.assertEqual(odgovor.status_code, 200)
+        self.assertEqual(len(odgovor.context["stavke_korpe"]), 0)
+        self.assertEqual(odgovor.context["ukupno_korpa"], 0)
