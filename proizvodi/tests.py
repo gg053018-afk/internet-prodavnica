@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import Narudzba, Proizvod
+from .models import Narudzba, Proizvod, StavkaNarudzbe
 
 # Create your tests here.
 class TestPocetneStranice(TestCase):
@@ -156,3 +156,93 @@ class TestPocetneStranice(TestCase):
             "proizvod_id": proizvod.id,
             "kolicina": "10"
         })
+
+        self.assertNotIn(str(proizvod.id), self.client.session.get("korpa", {}))
+
+    def test_narudzba_prazna_korpa(self):
+        korisnik = User.objects.create_user(
+            username="kupac_test",
+            password="test12345"
+        )
+
+        self.client.force_login(korisnik)
+        odgovor = self.client.post("/narudzba/", {
+            "ime": "Marko",
+            "prezime": "Markovic",
+            "adresa": "Test adresa 1",
+            "grad": "Banja Luka",
+            "postanski_broj": "78000",
+            "telefon": "060123456",
+            "email": "marko@example.com"
+        })
+
+        self.assertContains(odgovor, "Korpa je prazna.")
+
+    def test_narudzba_bez_obaveznih_podataka(self):
+        korisnik = User.objects.create_user(
+            username="kupac_bez_prezimena",
+            password="test12345"
+        )
+
+        self.client.force_login(korisnik)
+        odgovor = self.client.post("/narudzba/", {
+            "ime": "Marko",
+            "prezime": "",
+            "adresa": "Test adresa 1",
+            "grad": "Banja Luka",
+            "postanski_broj": "78000",
+            "telefon": "060123456",
+            "email": "marko@example.com"
+        })
+
+        self.assertContains(odgovor, "Morate popuniti sva obavezna polja.")
+
+    def test_uspjesna_narudzba(self):
+        korisnik = User.objects.create_user(
+            username="kupac_uspjesna_narudzba",
+            password="test12345"
+        )
+
+        self.client.force_login(korisnik)
+
+        proizvod = Proizvod.objects.create(
+            naziv="Hljeb",
+            kolicina=10,
+            cijena=2.50,
+            opis="Bijeli hljeb",
+            slika="proizvodi/test_hljeb.jpg",
+            kategorija="Pekarski proizvodi",
+            dostupan=True
+        )
+
+        self.client.post("/korpa/", {
+            "proizvod_id": proizvod.id,
+            "kolicina": "2"
+        })
+
+        odgovor = self.client.post("/narudzba/", {
+            "ime": "Marko",
+            "prezime": "Markovic",
+            "adresa": "Test adresa 1",
+            "grad": "Banja Luka",
+            "postanski_broj": "78000",
+            "telefon": "060123456",
+            "email": "marko@example.com"
+        })
+
+        self.assertEqual(Narudzba.objects.count(), 1)
+        proizvod.refresh_from_db()
+        self.assertEqual(proizvod.kolicina, 8)
+
+        narudzba = Narudzba.objects.first()
+        self.assertEqual(narudzba.ukupno, 5)
+        self.assertEqual(self.client.session.get("korpa"), {})
+        self.assertEqual(StavkaNarudzbe.objects.count(), 1)
+        
+        stavka = StavkaNarudzbe.objects.first()
+        self.assertEqual(stavka.kolicina, 2)
+        self.assertEqual(stavka.proizvod, proizvod)
+        self.assertEqual(stavka.cijena, 2.50)
+        self.assertEqual(narudzba.korisnik, korisnik)
+        self.assertEqual(narudzba.status, "Na čekanju")
+        self.assertEqual(stavka.narudzba, narudzba)       
