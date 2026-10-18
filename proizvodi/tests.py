@@ -245,4 +245,42 @@ class TestPocetneStranice(TestCase):
         self.assertEqual(stavka.cijena, 2.50)
         self.assertEqual(narudzba.korisnik, korisnik)
         self.assertEqual(narudzba.status, "Na čekanju")
-        self.assertEqual(stavka.narudzba, narudzba)       
+        self.assertEqual(stavka.narudzba, narudzba)
+
+    def test_narudzba_nedovoljno_zaliha(self):
+        korisnik = User.objects.create_user(
+            username="kupac_nedovoljno_zaliha",
+            password="test12345"
+        )
+
+        self.client.force_login(korisnik)
+
+        proizvod = Proizvod.objects.create(
+            naziv="Mlijeko",
+            kolicina=2,
+            cijena=3.00,
+            opis="Svježe mlijeko",
+            slika="proizvodi/test_mlijeko.jpg",
+            kategorija="Mliječni proizvodi",
+            dostupan=True
+        )
+
+        sesija = self.client.session
+        sesija["korpa"] = {str(proizvod.id): 5}
+        sesija.save()
+
+        odgovor = self.client.post("/narudzba/", {
+            "ime": "Marko",
+            "prezime": "Markovic",
+            "adresa": "Test adresa 1",
+            "grad": "Banja Luka",
+            "postanski_broj": "78000",
+            "telefon": "060123456",
+            "email": "marko@example.com"
+        })
+
+        self.assertContains(odgovor, "Nema dovoljno proizvoda na stanju.")
+        self.assertEqual(Narudzba.objects.count(), 0)
+        proizvod.refresh_from_db()
+        self.assertEqual(proizvod.kolicina, 2)
+        self.assertEqual(StavkaNarudzbe.objects.count(), 0)       
