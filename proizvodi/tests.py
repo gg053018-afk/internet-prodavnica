@@ -432,3 +432,24 @@ class TestPocetneStranice(TestCase):
         self.assertEqual(odgovor.status_code, 200)
         self.assertEqual(len(odgovor.context["stavke_korpe"]), 0)
         self.assertEqual(odgovor.context["ukupno_korpa"], 0)
+
+    def test_uklanjanje_obrisanog_proizvoda_iz_sesije(self):
+        proizvod = Proizvod.objects.create(
+            naziv="Sok od narandže",
+            kolicina=5,
+            cijena=3.50,
+            opis="Prirodni sok od narandže",
+            slika="proizvodi/test_sok.jpg",
+            kategorija="Pića",
+            dostupan=True
+        )
+
+        self.client.post("/korpa/", {
+            "proizvod_id": proizvod.id,
+            "kolicina": "1"
+        })
+
+        proizvod.delete()
+
+        self.client.get("/korpa/")
+        self.assertEqual(self.client.session.get("korpa", {}), {})

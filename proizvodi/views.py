@@ -76,10 +76,14 @@ def korpa(request):
     stavke_korpe = []
     ukupno_korpa = 0
 
+    obrisani_proizvodi = []
     for proizvod_id, kolicina in korpa_session.items():
         proizvod = Proizvod.objects.filter(id=proizvod_id).first()
+        
         if proizvod is None:
+            obrisani_proizvodi.append(proizvod_id)
             continue
+
         ukupno = proizvod.cijena * kolicina
         ukupno_korpa += ukupno
         stavke_korpe.append({
@@ -87,6 +91,11 @@ def korpa(request):
             "kolicina": kolicina,
             "ukupno": ukupno,
         })
+    for proizvod_id in obrisani_proizvodi:
+        del korpa_session[proizvod_id]
+
+    if obrisani_proizvodi:
+        request.session["korpa"] = korpa_session
 
     return render(request, "proizvodi/korpa.html",
     {
