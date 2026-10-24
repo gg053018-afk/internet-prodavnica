@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
+from django.test import override_settings
 
 class RegistracijaTest(TestCase):
 
@@ -89,7 +90,7 @@ class RegistracijaTest(TestCase):
         })
 
         self.assertEqual(odgovor.status_code, 200)
-        
+
         self.assertFalse(
             odgovor.wsgi_request.user.is_authenticated
         )
@@ -115,3 +116,30 @@ class RegistracijaTest(TestCase):
         self.assertFalse(
             odgovor.wsgi_request.user.is_authenticated
         )
+
+    @override_settings(DEMO_MODE=True)
+    def test_demo_registracija(self):
+        odgovor = self.client.post("/registracija/", {
+            "korisnicko_ime": "demo_test",
+            "e_mail": "demo_test@example.com",
+            "lozinka": "Test12345!",
+            "potvrda_lozinke": "Test12345!"
+        })
+
+        self.assertRedirects(odgovor, reverse("demo_aktivacija"))
+        korisnik = User.objects.get(username="demo_test")
+
+        self.assertFalse(korisnik.is_active)
+        self.assertIn("demo_aktivacioni_link", self.client.session)
+
+        odgovor = self.client.get(reverse("demo_aktivacija"))
+        self.assertEqual(odgovor.status_code, 200)
+
+        aktivacioni_link = self.client.session["demo_aktivacioni_link"]
+        odgovor = self.client.get(aktivacioni_link)
+
+        korisnik.refresh_from_db()
+        self.assertTrue(korisnik.is_active)
+        self.assertNotIn("demo_aktivacioni_link", self.client.session)
+        self.assertNotIn("demo_korisnik_id", self.client.session)
+        self.assertNotIn("demo_token", self.client.session)
