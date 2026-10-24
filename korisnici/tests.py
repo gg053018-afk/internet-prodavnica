@@ -144,6 +144,29 @@ class RegistracijaTest(TestCase):
         self.assertNotIn("demo_korisnik_id", self.client.session)
         self.assertNotIn("demo_token", self.client.session)
 
+    @override_settings(DEMO_MODE=True)
+    def test_demo_aktivacija_tudjeg_naloga(self):
+        drugi_korisnik = User.objects.create_user(
+            username="drugi_demo",
+            email="drugi_demo@example.com",
+            password="Test12345!"
+        )
+        drugi_korisnik.is_active = False
+        drugi_korisnik.save()
+
+        token = default_token_generator.make_token(drugi_korisnik)
+        uid = urlsafe_base64_encode(force_bytes(drugi_korisnik.pk))
+
+        aktivacioni_link = reverse(
+            "aktivacija",
+            kwargs={"uidb64": uid, "token": token}
+        )
+        odgovor = self.client.get(aktivacioni_link)
+        self.assertContains(odgovor, "Demo aktivacija nije dozvoljena.")
+
+        drugi_korisnik.refresh_from_db()
+        self.assertFalse(drugi_korisnik.is_active)
+
     @override_settings(DEMO_MODE=False)
     def test_demo_stranica_iskljucena(self):
         odgovor = self.client.get(reverse("demo_aktivacija"))
