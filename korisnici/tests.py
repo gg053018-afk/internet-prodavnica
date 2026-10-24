@@ -170,4 +170,39 @@ class RegistracijaTest(TestCase):
     @override_settings(DEMO_MODE=False)
     def test_demo_stranica_iskljucena(self):
         odgovor = self.client.get(reverse("demo_aktivacija"))
+        
         self.assertContains(odgovor, "Demo aktivacija nije dostupna.")
+
+    @override_settings(DEMO_MODE=True)
+    def test_demo_aktivacija_pogresnog_korisnika(self):
+        
+        prvi_korisnik = User.objects.create_user(
+            username="prvi_demo",
+            email="prvi_demo@example.com",
+            password="Test12345!"
+        )
+        
+        drugi_korisnik = User.objects.create_user(
+            username="drugi_demo",
+            email="drugi_demo@example.com",
+            password="Test12345!"
+        )
+
+        drugi_korisnik.is_active = False
+        drugi_korisnik.save()
+
+        self.client.force_login(prvi_korisnik)
+
+        response = self.client.get(
+            "/demo-aktivacija/",
+            {"user_id": drugi_korisnik.id}
+        )
+
+        self.assertContains(
+            response,
+            "Demo aktivacioni link nije pronadjen."
+        )
+
+        drugi_korisnik.refresh_from_db()
+
+        self.assertFalse(drugi_korisnik.is_active) 
