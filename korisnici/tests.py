@@ -143,3 +143,8 @@ class RegistracijaTest(TestCase):
         self.assertNotIn("demo_aktivacioni_link", self.client.session)
         self.assertNotIn("demo_korisnik_id", self.client.session)
         self.assertNotIn("demo_token", self.client.session)
+
+    @override_settings(DEMO_MODE=False)
+    def test_demo_stranica_iskljucena(self):
+        odgovor = self.client.get(reverse("demo_aktivacija"))
+        self.assertContains(odgovor, "Demo aktivacija nije dostupna.")
