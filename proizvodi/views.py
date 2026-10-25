@@ -6,7 +6,12 @@ from django.db import transaction
 from django.db.models import F
 
 def pocetna(request):
+    pretraga = request.GET.get("pretraga", "")
     proizvodi = Proizvod.objects.all()
+
+    if pretraga:
+        proizvodi = proizvodi.filter(naziv__icontains=pretraga)
+
     return render(request, "proizvodi/pocetna.html", {"proizvodi": proizvodi})
 
 def detalji_proizvoda(request, proizvod_id):

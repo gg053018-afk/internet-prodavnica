@@ -601,3 +601,51 @@ h1 {
     padding: 20px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
 }
+
+.forma-pretraga {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.forma-pretraga input {
+    width: 250px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin: 5px;
+}
+
+.forma-pretraga button {
+    background-color: #166534;
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.forma-pretraga label {
+    font-size: 18px;
+    color: #17324f;
+    font-weight: bold;
+}
+
+.prikazi-sve {
+    display: inline-block;
+    background-color: #166534;
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.nema-proizvoda {
+    font-size: 18px;
+    color: #17324f;
+    margin-top: 20px;
+}

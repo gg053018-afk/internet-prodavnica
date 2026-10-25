@@ -200,7 +200,7 @@ class RegistracijaTest(TestCase):
 
         self.assertContains(
             response,
-            "Demo aktivacioni link nije pronadjen."
+            "Demo aktivacioni link nije pronađen."
         )
 
         drugi_korisnik.refresh_from_db()

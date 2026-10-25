@@ -238,7 +238,7 @@ class TestPocetneStranice(TestCase):
         self.assertEqual(narudzba.ukupno, 5)
         self.assertEqual(self.client.session.get("korpa"), {})
         self.assertEqual(StavkaNarudzbe.objects.count(), 1)
-        
+
         stavka = StavkaNarudzbe.objects.first()
         self.assertEqual(stavka.kolicina, 2)
         self.assertEqual(stavka.proizvod, proizvod)
@@ -307,7 +307,7 @@ class TestPocetneStranice(TestCase):
         self.client.post("/korpa/", {
             "proizvod_id": proizvod.id,
             "kolicina": "1"
-        })       
+        })
 
         odgovor = self.client.post("/narudzba/", {
             "ime": "Marko",
@@ -453,3 +453,29 @@ class TestPocetneStranice(TestCase):
 
         self.client.get("/korpa/")
         self.assertEqual(self.client.session.get("korpa", {}), {})
+
+    def test_pretraga_proizvoda(self):
+        proizvod = Proizvod.objects.create(
+            naziv="Test laptop",
+            kolicina=5,
+            cijena=1200,
+            opis="Laptop za testiranje pretrage",
+            slika="proizvodi/test_laptop.jpg",
+            kategorija="Elektronika",
+            dostupan=True
+        )
+
+        Proizvod.objects.create(
+            naziv="Test miš",
+            kolicina=3,
+            cijena=25,
+            opis="Miš za testiranje pretrage",
+            slika="proizvodi/test_mis.jpg",
+            kategorija="Elektronika",
+            dostupan=True
+        )
+
+        odgovor = self.client.get("/", {"pretraga": "laptop"})
+
+        self.assertContains(odgovor, "Test laptop")
+        self.assertNotContains(odgovor, "Test miš")

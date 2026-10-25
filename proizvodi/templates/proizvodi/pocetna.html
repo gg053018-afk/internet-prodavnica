@@ -20,6 +20,27 @@
         <a href="{% url 'registracija' %}">Registruj se</a>
     {% endif %}
 </div>
+
+<form class="forma-pretraga" method="GET" action="{% url 'pocetna' %}">
+    <label for="pretraga">Pretraga proizvoda:</label>
+
+    <input
+        type="text"
+        id="pretraga"
+        name="pretraga"
+        placeholder="Unesite naziv proizvoda"
+    >
+
+    <button type="submit">Pretraži</button>
+
+</form>
+
+<a class="prikazi-sve" href="{% url 'pocetna' %}">Prikaži sve proizvode</a>
+
+{% if not proizvodi %}
+    <p class="nema-proizvoda">Nije pronađen nijedan proizvod.</p>
+{% endif %}
+
 <div class="lista-proizvoda">
 
 {% for proizvod in proizvodi %}
