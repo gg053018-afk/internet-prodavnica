@@ -7,10 +7,13 @@ from django.db.models import F
 
 def pocetna(request):
     pretraga = request.GET.get("pretraga", "")
+    kategorija = request.GET.get("kategorija", "")
     proizvodi = Proizvod.objects.all()
 
     if pretraga:
         proizvodi = proizvodi.filter(naziv__icontains=pretraga)
+    if kategorija:
+        proizvodi = proizvodi.filter(kategorija=kategorija)
 
     return render(request, "proizvodi/pocetna.html", {"proizvodi": proizvodi})
 

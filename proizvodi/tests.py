@@ -479,3 +479,31 @@ class TestPocetneStranice(TestCase):
 
         self.assertContains(odgovor, "Test laptop")
         self.assertNotContains(odgovor, "Test miš")
+
+    def test_filtriranje_po_kategoriji(self):
+        Proizvod.objects.create(
+            naziv="Test laptop",
+            kolicina=5,
+            cijena=1200,
+            opis="Laptop za testiranje kategorije",
+            slika="proizvodi/test_laptop.jpg",
+            kategorija="Elektronika",
+            dostupan=True
+        )
+
+        Proizvod.objects.create(
+            naziv="Test miš",
+            kolicina=3,
+            cijena=25,
+            opis="Miš za testiranje kategorije",
+            slika="proizvodi/test_mis.jpg",
+            kategorija="Računarska oprema",
+            dostupan=True
+        )
+
+        odgovor = self.client.get(
+            "/",
+            {"kategorija": "Elektronika"}
+        )
+        self.assertContains(odgovor, "Test laptop")
+        self.assertNotContains(odgovor, "Test miš")

@@ -649,3 +649,9 @@ h1 {
     color: #17324f;
     margin-top: 20px;
 }
+
+.forma-pretraga select {
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+}
