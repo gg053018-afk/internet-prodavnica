@@ -22,14 +22,19 @@
 </div>
 
 <form class="forma-pretraga" method="GET" action="{% url 'pocetna' %}">
-    <label for="pretraga">Pretraga proizvoda:</label>
 
-    <input
-        type="text"
-        id="pretraga"
-        name="pretraga"
-        placeholder="Unesite naziv proizvoda"
-    >
+    <div class="polje-pretrage">
+        <label for="pretraga">Pretraga proizvoda:</label>
+
+        <input
+            type="text"
+            id="pretraga"
+            name="pretraga"
+            placeholder="Unesite naziv proizvoda"
+        >
+    </div>
+
+    <div class="polje-kategorije">
 
     <label for="kategorija">Kategorija:</label>
 
@@ -38,6 +43,20 @@
         <option value="Elektronika">Elektronika</option>
         <option value="Računarska oprema">Računarska oprema</option>
     </select>
+
+    </div>
+
+    <div class="polje-sortiranja">
+
+    <label for="sortiranje">Sortiranje:</label>
+
+    <select id="sortiranje" name="sortiranje">
+        <option value="">Bez sortiranja</option>
+        <option value="cijena_rastuce">Cijena: od najniže</option>
+        <option value="cijena_opadajuce">Cijena: od najviše</option>
+    </select>
+
+    </div>
 
     <button type="submit">Pretraži</button>
 

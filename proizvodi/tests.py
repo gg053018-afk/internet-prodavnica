@@ -507,3 +507,43 @@ class TestPocetneStranice(TestCase):
         )
         self.assertContains(odgovor, "Test laptop")
         self.assertNotContains(odgovor, "Test miš")
+
+    def test_sortiranje_po_cijeni(self):
+
+        Proizvod.objects.create(
+            naziv="Test laptop",
+            kolicina=5,
+            cijena=1200,
+            opis="Laptop za testiranje sortiranja",
+            slika="proizvodi/test_laptop.jpg",
+            kategorija="Elektronika",
+            dostupan=True
+        )
+
+        Proizvod.objects.create(
+            naziv="Test miš",
+            kolicina=3,
+            cijena=25,
+            opis="Miš za testiranje sortiranja",
+            slika="proizvodi/test_mis.jpg",
+            kategorija="Računarska oprema",
+            dostupan=True
+        )
+
+        odgovor = self.client.get(
+            "/",
+            {"sortiranje": "cijena_rastuce"}
+        )
+
+        proizvodi = list(odgovor.context["proizvodi"])
+        self.assertEqual(proizvodi[0].naziv, "Test miš")
+        self.assertEqual(proizvodi[1].naziv, "Test laptop")
+        odgovor = self.client.get(
+            "/",
+            {"sortiranje": "cijena_opadajuce"}
+        )
+
+        proizvodi = list(odgovor.context["proizvodi"])
+
+        self.assertEqual(proizvodi[0].naziv, "Test laptop")
+        self.assertEqual(proizvodi[1].naziv, "Test miš")

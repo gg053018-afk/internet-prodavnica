@@ -397,6 +397,11 @@ h1 {
         align-items: center;
     }
 
+.forma-pretraga {
+    flex-direction: column;
+    align-items: stretch;
+}
+
     .kartica-proizvoda {
         width: 100%;
         box-sizing: border-box;
@@ -607,6 +612,10 @@ h1 {
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
 }
 
 .forma-pretraga input {
@@ -625,6 +634,7 @@ h1 {
     border-radius: 5px;
     border: none;
     cursor: pointer;
+    align-self: flex-end;
 }
 
 .forma-pretraga label {
@@ -655,3 +665,27 @@ h1 {
     padding: 10px;
     border-radius: 5px;
 }
+
+.polje-pretrage,
+.polje-kategorije,
+.polje-sortiranja {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+@media (max-width: 600px) {
+    .polje-pretrage,
+    .polje-kategorije,
+    .polje-sortiranja {
+        width: 100%;
+    }
+
+    .forma-pretraga button {
+        align-self: flex-start;
+    }
+}
+
+    .forma-pretraga input {
+        margin-left: 0;
+    }

@@ -8,12 +8,20 @@ from django.db.models import F
 def pocetna(request):
     pretraga = request.GET.get("pretraga", "")
     kategorija = request.GET.get("kategorija", "")
+    sortiranje = request.GET.get("sortiranje", "")
     proizvodi = Proizvod.objects.all()
 
     if pretraga:
         proizvodi = proizvodi.filter(naziv__icontains=pretraga)
+
     if kategorija:
         proizvodi = proizvodi.filter(kategorija=kategorija)
+
+    if sortiranje == "cijena_rastuce":
+        proizvodi = proizvodi.order_by("cijena")
+
+    elif sortiranje == "cijena_opadajuce":
+        proizvodi = proizvodi.order_by("-cijena")
 
     return render(request, "proizvodi/pocetna.html", {"proizvodi": proizvodi})
 
