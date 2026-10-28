@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Proizvod, Narudzba, StavkaNarudzbe
 from django.db import transaction
 from django.db.models import F
+from django.core.paginator import Paginator
 
 def pocetna(request):
     pretraga = request.GET.get("pretraga", "")
@@ -23,7 +24,16 @@ def pocetna(request):
     elif sortiranje == "cijena_opadajuce":
         proizvodi = proizvodi.order_by("-cijena")
 
-    return render(request, "proizvodi/pocetna.html", {"proizvodi": proizvodi})
+    else:
+        proizvodi = proizvodi.order_by("id")
+
+    paginator = Paginator(proizvodi, 10)
+
+    broj_stranice = request.GET.get("page")
+
+    stranica = paginator.get_page(broj_stranice)
+
+    return render(request, "proizvodi/pocetna.html", {"proizvodi": stranica})
 
 def detalji_proizvoda(request, proizvod_id):
     poruka = ""

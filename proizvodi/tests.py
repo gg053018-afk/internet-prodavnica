@@ -675,3 +675,27 @@ class TestPocetneStranice(TestCase):
         self.assertEqual(len(proizvodi), 2)
         self.assertEqual(proizvodi[0].naziv, "Test laptop mini")
         self.assertEqual(proizvodi[1].naziv, "Test laptop")
+
+    def test_paginacija_proizvoda(self):
+        for broj in range(11):
+            Proizvod.objects.create(
+                naziv=f"Test proizvod {broj}",
+                kolicina=5,
+                cijena=100,
+                opis="Proizvod za test paginacije",
+                slika="proizvodi/test.jpg",
+                kategorija="Elektronika",
+                dostupan=True
+            )
+
+        odgovor = self.client.get("/")
+        proizvodi = list(odgovor.context["proizvodi"])
+
+        self.assertEqual(len(proizvodi), 10)
+        self.assertContains(odgovor, 'href="?page=2"')
+
+        odgovor = self.client.get("/", {"page": 2})
+        proizvodi = list(odgovor.context["proizvodi"])
+
+        self.assertEqual(len(proizvodi), 1)
+        self.assertContains(odgovor, 'href="?page=1"')
