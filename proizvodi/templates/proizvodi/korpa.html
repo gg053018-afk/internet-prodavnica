@@ -43,8 +43,16 @@
     <input type="hidden" name="proizvod_id"
     value="{{ stavka.proizvod.id }}">
 
-<button type="submit" name="akcija" value="ukloni" class="dugme-ukloni">Ukloni iz korpe</button>
+<button
+    type="submit"
+    name="akcija"
+    value="ukloni"
+    class="dugme-ukloni"
+    onclick="return confirm('Da li sigurno zelis ukloniti proizvod iz korpe?')"
+>
+    Ukloni iz korpe
 
+</button>
 </form>
 
 <p>Cijena po komadu: {{ stavka.proizvod.cijena }} KM</p>
