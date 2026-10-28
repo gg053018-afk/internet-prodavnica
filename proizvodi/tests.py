@@ -629,3 +629,49 @@ class TestPocetneStranice(TestCase):
         self.assertEqual(len(proizvodi), 2)
         self.assertEqual(proizvodi[0].naziv, "Test laptop mini")
         self.assertEqual(proizvodi[1].naziv, "Test laptop")
+
+    def test_sva_tri_filtera(self):
+        Proizvod.objects.create(
+            naziv="Test laptop",
+            kolicina=5,
+            cijena=1200,
+            opis="Laptop za testiranje tri filtera",
+            slika="proizvodi/test_laptop.jpg",
+            kategorija="Elektronika",
+            dostupan=True
+        )
+
+        Proizvod.objects.create(
+            naziv="Test laptop mini",
+            kolicina=3,
+            cijena=600,
+            opis="Manji laptop za testiranje tri filtera",
+            slika="proizvodi/test_laptop_mini.jpg",
+            kategorija="Elektronika",
+            dostupan=True
+        )
+
+        Proizvod.objects.create(
+            naziv="Test laptop torba",
+            kolicina=4,
+            cijena=50,
+            opis="Torba za laptop za testiranje tri filtera",
+            slika="proizvodi/test_torba.jpg",
+            kategorija="Računarska oprema",
+            dostupan=True
+        )
+
+        odgovor = self.client.get(
+            "/",
+            {
+                "pretraga": "laptop",
+                "kategorija": "Elektronika",
+                "sortiranje": "cijena_rastuce"
+            }
+        )
+
+        proizvodi = list(odgovor.context["proizvodi"])
+
+        self.assertEqual(len(proizvodi), 2)
+        self.assertEqual(proizvodi[0].naziv, "Test laptop mini")
+        self.assertEqual(proizvodi[1].naziv, "Test laptop")
