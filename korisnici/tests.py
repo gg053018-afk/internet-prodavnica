@@ -27,6 +27,7 @@ class RegistracijaTest(TestCase):
         self.assertEqual(korisnik.email, "test@example.com")
         self.assertFalse(korisnik.is_active)
 
+    @override_settings(DEMO_MODE=False)
     def test_slanje_aktivacionog_emaila(self):
         self.client.post("/registracija/", {
             "korisnicko_ime": "testemail",
@@ -36,6 +37,7 @@ class RegistracijaTest(TestCase):
         })
         self.assertEqual(len(mail.outbox), 1)
 
+    @override_settings(DEMO_MODE=False)
     def test_aktivacija_korisnika(self):
         korisnik = User.objects.create_user(
             username="testaktivacija",
