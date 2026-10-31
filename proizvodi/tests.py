@@ -120,6 +120,26 @@ class TestPocetneStranice(TestCase):
 
         self.assertEqual(self.client.session["korpa"][str(proizvod.id)], 3)
 
+    def test_dodavanje_vise_od_zaliha_u_korpu(self):
+        proizvod = Proizvod.objects.create(
+            naziv="Sok",
+            kolicina=2,
+            cijena=3.00,
+            opis="Sok od narandze",
+            slika="proizvodi/sok.jpg",
+            kategorija="Pica",
+            dostupan=True
+        )
+        
+        odgovor = self.client.post(f"/proizvod/{proizvod.id}/", {
+            "kolicina": "5"
+        })
+        self.assertContains(
+            odgovor,
+            "Neispravna količina ili nema dovoljno proizvoda na stanju."
+        )
+        self.assertEqual(self.client.session.get("korpa", {}), {})
+
     def test_uklanjanje_proizvoda_iz_korpe(self):
         proizvod = Proizvod.objects.create(
             naziv="Sok",
